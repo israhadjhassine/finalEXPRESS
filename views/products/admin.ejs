@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Beauty Glow Pro - Admin Dashboard</title>
+  <link rel="stylesheet" href="../css/admin.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <script src="https://unpkg.com/lucide@latest"></script>
+ 
+</head>
+<body>
+ 
+  <div class="sidebar">
+    <div class="logo">
+      <i class="fas fa-spa"></i>
+      <span>Beauty Glow</span>
+    </div>
+    
+    <div class="sidebar-menu">
+      <a href="#" class="sidebar-item active">
+        <i data-lucide="layout-dashboard"></i>
+        <span>Dashboard</span>
+      </a>
+    </div>
+    
+    <div class="sidebar-footer">
+      <form action="/" method="POST" class="logout-form">
+        <button type="submit" class="logout-button">
+          <div class="sidebar-item">
+            <i data-lucide="log-out"></i>
+            <span>Déconnexion</span>
+          </div>
+        </button>
+      </form>
+    </div>
+  </div>
+  
+
+  <div class="main-content">
+    <div class="welcome-section">
+      <h2 class="welcome-message">Tableau de bord Admin</h2>
+      <div class="profile-info">
+        <i data-lucide="user"></i>
+        <span><%= user.username %></span>
+      </div>
+    </div>
+    
+    <% if (message) { %>
+      <div class="alert alert-success">
+        <i data-lucide="check-circle"></i>
+        <span><%= message %></span>
+      </div>
+    <% } %>
+    
+    <% if (error) { %>
+      <div class="alert alert-error">
+        <i data-lucide="alert-circle"></i>
+        <span><%= error %></span>
+      </div>
+    <% } %>
+    
+    <h3 style="margin-bottom: 20px; color: var(--primary-dark);">Liste des gestionnaires</h3>
+    
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Username</th>
+          <th>Marque</th>
+          <th>Email</th>
+          <th>Date d'inscription</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (gestionnaires.length > 0) { %>
+          <% gestionnaires.forEach(gestionnaire => { %>
+            <tr>
+              <td><%= gestionnaire.fullname || gestionnaire.username %></td>
+              <td><%= gestionnaire.brandName || 'Non spécifié' %></td>
+              <td><%= gestionnaire.email %></td>
+              <td><%= new Date(gestionnaire.createdAt).toLocaleDateString() %></td>
+              <td>
+                <form method="POST" action="/products/admin/<%= gestionnaire.id %>" style="display: inline;">
+                 <button type="submit" class="action-btn delete-btn">
+   <i data-lucide="trash-2"></i> Supprimer
+                  </button>
+                </form>
+              </td>
+            </tr>
+          <% }); %>
+        <% } else { %>
+          <tr>
+            <td colspan="5" style="text-align: center;">Aucun gestionnaire trouvé</td>
+          </tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+
+<script>
+  lucide.createIcons();
+
+  document.querySelectorAll('.delete-btn').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      e.preventDefault(); // Prevent form from submitting immediately
+      const form = this.closest('form');
+
+      Swal.fire({
+        title: 'Êtes-vous sûr ?',
+        text: "Cette action est irréversible.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Oui, supprimer',
+        cancelButtonText: 'Annuler'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          form.submit(); // Submit the form only if confirmed
+        }
+      });
+    });
+  });
+</script>
+
+</body>
+</html>

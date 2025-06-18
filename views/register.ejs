@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Beauty Glow Pro - Inscription</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+   <link rel="stylesheet" href="/css/register.css">
+</head>
+<body>
+  <header>
+    <div class="container nav-container">
+      <div class="logo">
+        <i class="fas fa-spa"></i>
+        <span>Beauty Glow Pro</span>
+      </div>
+      <div class="nav-links">
+        <a href="/">Accueil</a>
+        <a href="#">Produits</a>
+        <a href="#">Conseils</a>
+        <a href="/auth/login">Login</a>
+        <a href="/auth/register" class="active">Register</a>
+      </div>
+    </div>
+  </header>
+    <% if (typeof error !== 'undefined'  && error) { %>
+        <div class="error">
+          <i class="fas fa-exclamation-circle"></i>
+          <span><%= error %></span>
+        </div>
+      <% } %>
+  <main class="register-main">
+    <div class="register-container">
+      <h2>Créer un compte</h2>
+      <form method="POST" action="/auth/register">
+        
+     
+        <div class="input-group">
+          <label>Nom d'utilisateur</label>
+          <div class="input-container">
+            <i class="fas fa-at"></i>
+            <input type="text" name="username" required />
+          </div>
+        </div>
+        
+        <div class="input-group">
+          <label>Email</label>
+          <div class="input-container">
+            <i class="fas fa-envelope"></i>
+            <input type="email" name="email" required />
+          </div>
+        </div>
+        
+        <div class="input-group">
+          <label>Mot de passe</label>
+          <div class="input-container">
+            <i class="fas fa-lock"></i>
+            <input type="password" name="password" required />
+          </div>
+        </div>
+
+        <div class="checkbox-container">
+          <input type="checkbox" id="isManager" name="isManager" onchange="toggleBrandInput()" />
+          <label for="isManager">Je suis gestionnaire</label>
+        </div>
+
+        <div id="brandInput" class="hidden">
+          <div class="input-group">
+            <label>Nom de la marque</label>
+            <div class="input-container">
+              <i class="fas fa-tag"></i>
+              <input type="text" name="brandName" />
+            </div>
+          </div>
+        </div>
+
+        <button type="submit">
+          <span>S'inscrire</span>
+        </button>
+      
+      </form>
+      
+      <div class="social-login">
+        <p>Ou s'inscrire avec</p>
+        <div class="social-icons">
+          <a href="#" class="social-icon facebook">
+            <i class="fab fa-facebook-f"></i>
+          </a>
+          <a href="#" class="social-icon google">
+            <i class="fab fa-google"></i>
+          </a>
+          <a href="#" class="social-icon apple">
+            <i class="fab fa-apple"></i>
+          </a>
+        </div>
+      </div>
+      
+      <p class="footer-text">
+        Déjà un compte ? <a href="/auth/login">Se connecter</a>
+      </p>
+    </div>
+       
+  </main>
+  
+  <footer>
+    <div class="container">
+      <p>&copy; 2025 Beauty Glow Pro. Tous droits réservés.</p>
+    </div>
+  </footer>
+
+  <script>
+    function toggleBrandInput() {
+      const checkbox = document.getElementById('isManager');
+      const brandInput = document.getElementById('brandInput');
+      
+      if (checkbox.checked) {
+        brandInput.classList.remove('hidden');
+        brandInput.style.animation = 'fadeIn 0.5s ease';
+      } else {
+        brandInput.style.animation = 'fadeOut 0.3s ease';
+        setTimeout(() => {
+          brandInput.classList.add('hidden');
+        }, 300);
+      }
+    }
+   
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes fadeOut {
+        from { opacity: 1; transform: translateY(0); }
+        to { opacity: 0; transform: translateY(10px); }
+      }
+    `;
+    document.head.appendChild(style);
+  </script>
+</body>
+</html>

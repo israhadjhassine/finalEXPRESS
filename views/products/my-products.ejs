@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Beauty Glow Pro - Gestion des Produits</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+   <link rel="stylesheet" href="../css/product.css">
+</head>
+<body>
+  
+  <div class="sidebar">
+    <div class="logo">
+      <i class="fas fa-spa"></i>
+      <span>Beauty Glow</span>
+    </div>
+    
+    <div class="sidebar-menu">
+      <a href="#" class="sidebar-item active" id="productsLink">
+        <i data-lucide="package"></i>
+        <span>Produits</span>
+      </a>
+      <a href="#" class="sidebar-item" id="profileLink">
+        <i data-lucide="user"></i>
+        <span>Profil</span>
+      </a>
+    </div>
+    
+    <div class="sidebar-footer">
+      <form action="/" method="POST" class="logout-form">
+        <button type="submit" class="logout-button">
+          <div class="sidebar-item">
+            <i data-lucide="log-out"></i>
+            <span>Déconnexion</span>
+          </div>
+        </button>
+      </form>
+    </div>
+  </div>
+  
+ 
+  <div class="main-content" id="productsSection">
+    <div class="welcome-section">
+      <div class="welcome-message">
+        <h2>Bienvenue, <%= user.username %> ! <span style="font-size: 0.9em;">😊</span></h2>
+      </div>
+      <div class="profile-info">
+        <i data-lucide="user"></i>
+        <span><%= user.username %></span>
+      </div>
+    </div>
+    
+    <button class="add-product-btn" id="showFormBtn">
+      <i data-lucide="plus"></i>
+      Ajouter un produit
+    </button>
+    
+    <div class="products-grid">
+      <% for (let type in grouped) { %>
+        <% grouped[type].forEach(p => { %>
+          <div class="product-card">
+            <span class="product-type"><%= type.toUpperCase() %></span>
+            <% if (p.image) { %>
+              <div class="product-image-container">
+                <img src="<%= p.image %>" alt="<%= p.name %>" class="product-image">
+              </div>
+            <% } %>
+            <h3 class="product-name"><%= p.name %></h3>
+            <p class="product-details">
+              <%= p.quantity %> en stock<br>
+              <%= p.price.toFixed(2) %> €
+            </p>
+            <div class="product-actions">
+              <button class="edit-btn" onclick="showEditForm('<%= p.id %>', '<%= p.name %>', '<%= p.description %>', '<%= p.type %>', '<%= p.quantity %>', '<%= p.price %>', '<%= p.image %>' )">
+                <i data-lucide="edit"></i> Modifier
+              </button>
+              <form method="POST" action="/products/delete/<%= p.id %>" onsubmit="return confirm('Confirmer la suppression ?');" style="display: inline;">
+                <button type="submit" class="delete-btn">
+                  <i data-lucide="trash-2"></i> Supprimer
+                </button>
+              </form>
+            </div>
+          </div>
+        <% }) %>
+      <% } %>
+    </div>
+  </div>
+
+ 
+  
+  
+  <div class="form-container" id="addFormContainer">
+    <div class="product-form">
+      <div class="form-header">
+        <h2>Ajouter un produit</h2>
+        <button class="close-form" id="closeAddFormBtn">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+      
+      <form method="POST" action="/products/create" id="addProductForm">
+        <div class="form-group">
+          <label for="image">Image du produit</label>
+          <input type="text" id="image" name="image" accept="image/*">
+        </div>
+        <div class="form-group">
+          <label for="name">Nom du produit</label>
+          <input type="text" id="name" name="name" required>
+          <div class="error-message" id="nameError"></div>
+        </div>
+        
+        <div class="form-group">
+          <label for="description">Description</label>
+          <textarea id="description" name="description"></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label for="type">Type de produit</label>
+          <select id="type" name="type" required>
+            <option value="">Sélectionnez un type</option>
+            <option value="cheveux">Cheveux</option>
+            <option value="visage">Visage</option>
+            <option value="corps">Corps</option>
+            <option value="main">Main</option>
+          </select>
+          <div class="error-message" id="typeError"></div>
+        </div>
+        
+        <div class="form-group">
+          <label for="quantity">Quantité en stock</label>
+          <input type="number" id="quantity" name="quantity" min="0" required>
+          <div class="error-message" id="quantityError"></div>
+        </div>
+        
+        <div class="form-group">
+          <label for="price">Prix (€)</label>
+          <input type="number" id="price" name="price" step="0.01" min="0" required>
+          <div class="error-message" id="priceError"></div>
+        </div>
+        
+        <% if (error) { %>
+          <div class="error-message" style="display: block; margin-bottom: 15px;">
+            <%= error %>
+          </div>
+        <% } %>
+        
+        <button type="submit" class="submit-btn">Enregistrer</button>
+      </form>
+    </div>
+  </div>
+
+
+  <div class="form-container" id="editFormContainer">
+    <div class="product-form">
+      <div class="form-header">
+        <h2>Modifier le produit</h2>
+        <button class="close-form" id="closeEditFormBtn">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+      
+      <form method="POST" action="" id="editProductForm">
+        <input type="hidden" id="editId" name="id">
+
+        <div class="form-group">
+          <label for="editimage">Image du produit</label>
+          <input type="text" id="editimage" name="image" accept="image/*">
+        </div>
+        
+        <div class="form-group">
+          <label for="editName">Nom du produit</label>
+          <input type="text" id="editName" name="name" required>
+          <div class="error-message" id="editNameError"></div>
+        </div>
+        
+        <div class="form-group">
+          <label for="editDescription">Description</label>
+          <textarea id="editDescription" name="description"></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label for="editType">Type de produit</label>
+          <select id="editType" name="type" required>
+            <option value="cheveux">Cheveux</option>
+            <option value="visage">Visage</option>
+            <option value="corps">Corps</option>
+            <option value="main">Main</option>
+          </select>
+          <div class="error-message" id="editTypeError"></div>
+        </div>
+        
+        <div class="form-group">
+          <label for="editQuantity">Quantité en stock</label>
+          <input type="number" id="editQuantity" name="quantity" min="0" required>
+          <div class="error-message" id="editQuantityError"></div>
+        </div>
+        
+        <div class="form-group">
+          <label for="editPrice">Prix (€)</label>
+          <input type="number" id="editPrice" name="price" step="0.01" min="0" required>
+          <div class="error-message" id="editPriceError"></div>
+        </div>
+        
+        <div class="error-message" id="editFormError" style="display: none; margin-bottom: 15px;"></div>
+        
+        <button type="submit" class="submit-btn">Mettre à jour</button>
+      </form>
+    </div>
+  </div>
+
+
+
+
+
+
+  <div class="main-content" id="profileSection" style="display: none;">
+    <div class="welcome-section">
+      <h2 class="welcome-message">Profil</h2>
+      <div class="profile-info">
+        <i data-lucide="user"></i>
+        <span><%= user.username %></span>
+      </div>
+    </div>
+
+    <div class="profile-container">
+      <div class="profile-header">
+        <h3>Informations du profil</h3>
+        <button class="back-btn" id="backToDashboard">
+          <i data-lucide="arrow-left"></i> Retour
+        </button>
+      </div>
+
+      <div class="profile-info-section">
+        <h4>Informations personnelles</h4>
+        
+        
+       <!-- <div class="info-row">
+          <div class="info-field">
+            <label>Nom complet</label>
+            <div class="info-display"><%= user.username %></div>
+          </div>
+          
+          <div class="info-field">
+            <label>Adresse email</label>
+            <div class="info-display"><%= user.email %></div>
+          </div>
+        </div>
+      </div>-->
+
+     
+      
+        
+        <form method="POST" action="" class="password-form">
+
+
+<div class="info-row">
+
+  <div class="password-row">
+      <div class="password-field">
+        <label for="username">Nom d'utilisateur</label>
+        <input type="text" id="username" name="username" value="<%= user.username %>">
+      </div>
+      
+      <div class="password-field">
+        <label for="email">Adresse email</label>
+        <input type="email" id="email" name="email" value="<%= user.email %>" >
+      </div>
+    </div>
+</div>
+
+          
+     <div class="profile-info-section">
+        <h4>Changer le profil</h4>     
+          <div class="password-row">
+           <div class="password-field">
+            <label for="currentPassword">Mot de passe actuel</label> <br>
+            <input type="password" id="currentPassword" name="currentPassword" style="width: 560px;">
+          </div>
+          </div>
+
+          <div class="password-row">
+
+             
+
+            <div class="password-field">
+              <label for="newPassword">Nouveau mot de passe</label>
+              <input type="password" id="newPassword" name="newPassword" >
+            </div>
+            
+            <div class="password-field">
+              <label for="confirmPassword">Confirmer le mot de passe</label>
+              <input type="password" id="confirmPassword" name="confirmPassword">
+            </div>
+          </div>
+          <br><br>
+          <button type="submit" class="update-password-btn">
+            Changer le profil
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    lucide.createIcons();
+    
+    // Gestion de la navigation entre produits et profil
+    const productsLink = document.getElementById('productsLink');
+    const profileLink = document.getElementById('profileLink');
+    const productsSection = document.getElementById('productsSection');
+    const profileSection = document.getElementById('profileSection');
+    const backToDashboard = document.getElementById('backToDashboard');
+
+    // Au chargement de la page, activez la section Produits par défaut
+    productsLink.classList.add('active');
+
+    // Gestion du clic sur le lien Profil
+    profileLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      productsSection.style.display = 'none';
+      profileSection.style.display = 'block';
+      
+      // Mise à jour de l'état actif dans la sidebar
+      productsLink.classList.remove('active');
+      profileLink.classList.add('active');
+    });
+
+    // Gestion du clic sur le lien Produits
+    productsLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      productsSection.style.display = 'block';
+      profileSection.style.display = 'none';
+      
+      // Mise à jour de l'état actif dans la sidebar
+      profileLink.classList.remove('active');
+      productsLink.classList.add('active');
+    });
+
+    // Gestion du bouton Retour dans le profil
+    backToDashboard.addEventListener('click', () => {
+      productsSection.style.display = 'block';
+      profileSection.style.display = 'none';
+      
+      // Mise à jour de l'état actif dans la sidebar
+      profileLink.classList.remove('active');
+      productsLink.classList.add('active');
+    });
+
+    // Gestion du formulaire d'ajout
+    const showFormBtn = document.getElementById('showFormBtn');
+    const closeAddFormBtn = document.getElementById('closeAddFormBtn');
+    const addFormContainer = document.getElementById('addFormContainer');
+    
+    showFormBtn.addEventListener('click', () => {
+      addFormContainer.classList.add('active');
+    });
+    
+    closeAddFormBtn.addEventListener('click', () => {
+      addFormContainer.classList.remove('active');
+    });
+    
+    // Gestion du formulaire de modification
+    const closeEditFormBtn = document.getElementById('closeEditFormBtn');
+    const editFormContainer = document.getElementById('editFormContainer');
+    
+    closeEditFormBtn.addEventListener('click', () => {
+      editFormContainer.classList.remove('active');
+    });
+    
+    // Fermer les formulaires en cliquant à l'extérieur
+    [addFormContainer, editFormContainer].forEach(container => {
+      container.addEventListener('click', (e) => {
+        if (e.target === container) {
+          container.classList.remove('active');
+        }
+      });
+    });
+    
+    // Fonction pour afficher le formulaire de modification avec les données pré-remplies
+    function showEditForm(id, name, description, type, quantity, price, image) {
+      document.getElementById('editId').value = id;
+      document.getElementById('editName').value = name;
+      document.getElementById('editDescription').value = description;
+      document.getElementById('editType').value = type;
+      document.getElementById('editQuantity').value = quantity;
+      document.getElementById('editPrice').value = price;
+      document.getElementById('editimage').value = image;
+      
+      // Mettre à jour l'action du formulaire
+      document.getElementById('editProductForm').action = `/products/edit/${id}`;
+      
+      // Afficher le formulaire
+      editFormContainer.classList.add('active');
+    }
+    
+    // Validation des formulaires
+    [document.getElementById('addProductForm'), document.getElementById('editProductForm')].forEach(form => {
+      form.addEventListener('submit', function(e) {
+        let isValid = true;
+        
+        // Validation des champs requis
+        const requiredFields = form.querySelectorAll('[required]');
+        requiredFields.forEach(field => {
+          const errorId = `${field.id}Error`;
+          const errorElement = document.getElementById(errorId);
+          
+          if (!field.value.trim()) {
+            errorElement.textContent = 'Ce champ est requis';
+            errorElement.style.display = 'block';
+            isValid = false;
+          } else {
+            errorElement.style.display = 'none';
+          }
+        });
+        
+        // Validation des nombres positifs
+        const numberFields = form.querySelectorAll('input[type="number"]');
+        numberFields.forEach(field => {
+          const errorId = `${field.id}Error`;
+          const errorElement = document.getElementById(errorId);
+          
+          if (field.value && parseFloat(field.value) < 0) {
+            errorElement.textContent = 'La valeur doit être positive';
+            errorElement.style.display = 'block';
+            isValid = false;
+          }
+        });
+        
+        if (!isValid) {
+          e.preventDefault();
+          
+          // Afficher l'erreur générale
+          if (form.id === 'editProductForm') {
+            document.getElementById('editFormError').textContent = 'Veuillez corriger les erreurs dans le formulaire';
+            document.getElementById('editFormError').style.display = 'block';
+          }
+        }
+      });
+    });
+  </script>
+</body>
+</html>
