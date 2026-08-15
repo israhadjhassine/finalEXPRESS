@@ -25,25 +25,14 @@ A Node.js & Express web application for managing cosmetics products, featuring R
 
 ##  Installation & Setup
 
-### 1. Prerequisites
-- Node.js (v16+)
-- MySQL Server
 
-### 2. Database Config
-Create a MySQL database named `cosmetics_db`. If needed, update connection details in `config/db.js`:
-```javascript
-const sequelize = new Sequelize('cosmetics_db', 'username', 'password', {
-  host: 'localhost',
-  dialect: 'mysql',
-});
-```
 
-### 3. Install Dependencies
+###  Install Dependencies
 ```bash
 npm install
 ```
 
-### 4. Run the Server
+###  Run the Server
 ```bash
 node app.js
 ```
